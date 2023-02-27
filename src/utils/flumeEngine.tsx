@@ -2,28 +2,27 @@ import { RootEngine, FlumeConfig } from 'flume'
 import React, { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 const flumeConfig = new FlumeConfig()
-import * as THREE from 'three'
 
 function Box(props) {
 	// This reference gives us direct access to the THREE.Mesh object
-	const ref = useRef()
+	//const ref = useRef()
 	// Hold state for hovered and clicked events
-	const [hovered, hover] = useState(false)
-	const [clicked, click] = useState(false)
+	//const [hovered, hover] = useState(false)
+	//const [clicked, click] = useState(false)
 	// Subscribe this component to the render-loop, rotate the mesh every frame
-	useFrame((state, delta) => (ref.current.rotation.x += delta))
+	//useFrame((state, delta) => (ref.current.rotation.x += delta))
 	// Return the view, these are regular Threejs elements expressed in JSX
 	return (
 		<mesh
 			{...props}
-			ref={ref}
-			scale={clicked ? 1.5 : 1}
-			onClick={event => click(!clicked)}
-			onPointerOver={event => hover(true)}
-			onPointerOut={event => hover(false)}
+		//			ref={ref}
+		//	scale={clicked ? 1.5 : 1}
+		//	onClick={event => click(!clicked)}
+		//	onPointerOver={event => hover(true)}
+		//	onPointerOut={event => hover(false)}
 		>
 			<boxGeometry args={[1, 1, 1]} />
-			<meshStandardMaterial color={hovered ? 'hotpink' : 'orange'} />
+			<meshStandardMaterial color={'orange'} />
 		</mesh>
 	)
 }
@@ -39,7 +38,6 @@ const resolvePorts = (portType, data) => {
 		case 'number':
 			return data.number
 		case 'geometry':
-			console.log('geometry inside port resolver', data)
 			return data.geometry
 		default:
 			return data
@@ -61,7 +59,6 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 		case 'reverseBoolean':
 			return { boolean: !inputValues.boolean }
 		case 'geometry':
-			console.log('node resolver', inputValues)
 			const { posX, posY, posZ } = inputValues
 			return { geometry: [<Box position={[posX, posY, posZ]} />] }
 		case 'compose':

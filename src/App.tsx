@@ -1,4 +1,5 @@
 import './App.css'
+import ThreeCanvas from './three/nodes/ThreeCanvas.tsx'
 import React, { useState, useRef, useCallback } from 'react'
 import {
 	useRootEngine,
@@ -8,10 +9,7 @@ import {
 	Colors,
 	NodeEditor
 } from 'flume'
-
 import { engine, config } from './utils/flumeEngine.tsx'
-import ThreeRoot from './three/nodes/threeRoot.tsx'
-import { createRoot } from 'react-dom/client'
 import { Canvas, useFrame } from '@react-three/fiber'
 
 //basic string node
@@ -83,32 +81,6 @@ config
 		inputs: ports => [ports.number()],
 		outputs: ports => [ports.number()]
 	})
-
-//user node
-config.addNodeType({
-	type: 'user',
-	label: 'User',
-	description: 'Outputs attributes of the current user',
-	initialWidth: 130,
-	outputs: ports => [
-		ports.string({
-			name: 'firstName',
-			label: 'First Name'
-		}),
-		ports.string({
-			name: 'lastName',
-			label: 'Last Name'
-		}),
-		ports.boolean({
-			name: 'isLoggedIn',
-			label: 'Is Logged-In'
-		}),
-		ports.boolean({
-			name: 'isAdmin',
-			label: 'Is Admin'
-		})
-	]
-})
 
 config.addNodeType({
 	type: 'threeRoot',
@@ -185,11 +157,10 @@ config.addNodeType({
 		})
 	],
 	outputs: ports => (data, connections) => {
-		console.log('data in outport of geometry', data)
 		return [
 			ports.geometry({
 				name: 'geometry',
-				label: 'box Geometry'
+				label: 'geometry'
 			})
 		]
 	}
@@ -199,77 +170,14 @@ config.addNodeType({
 config
 	/*  ...  */
 	.addRootNodeType({
-		type: 'homepage',
-		label: 'Homepage',
+		type: 'three-canvas',
+		label: 'Three Canvas',
 		initialWidth: 170,
 		inputs: ports => [
-			ports.string({
-				name: 'title',
-				label: 'Title'
-			}),
-			ports.string({
-				name: 'description',
-				label: 'Description'
-			}),
-			ports.boolean({
-				name: 'showSignup',
-				label: 'Show Signup'
-			}),
-			ports.number({
-				name: 'copyrightYear',
-				label: 'Copyright Year'
-			}),
 			ports.geometry({ name: 'geometry', label: 'geometry' })
 		]
 	})
 
-const fakeUser = {
-	firstName: 'Bustopher',
-	lastName: 'Jones',
-	isLoggedIn: true,
-	isAdmin: false
-}
-const nullUser = {
-	firstName: '',
-	lastName: '',
-	isLoggedIn: false,
-	isAdmin: false
-}
-
-const Homepage = ({ nodes }) => {
-	const [user, setUser] = React.useState(fakeUser)
-	const {
-		title,
-		description,
-		showSignup,
-		copyrightYear
-	} = useRootEngine(nodes, engine, { user })
-	console.log('title', title)
-	const login = () => setUser(fakeUser)
-	const logout = () => setUser(nullUser)
-	return (
-		<div className="homepage">
-			<h1 className="title">{title}</h1>
-			<p className="description">{description}</p>
-			{user.isLoggedIn ? (
-				<button onClick={logout}>Logout</button>
-			) : (
-				<button onClick={login}>Login</button>
-			)}
-			{showSignup && (
-				<form className="signup">
-					<input type="email" />
-					<button>Signup!</button>
-				</form>
-			)}
-			<footer>© flume {copyrightYear}</footer>
-
-			<div id="three-viewport">
-				<ThreeRoot nodes={nodes} />
-			</div>
-		</div>
-	)
-}
 const App = () => {
 	const nodeEditor = React.useRef()
 	const [nodes, setNodes] = React.useState({})
@@ -277,6 +185,10 @@ const App = () => {
 		const nodes = nodeEditor.current.getNodes()
 		// Do whatever you want with the nodes
 	}
+	const test = useRootEngine(nodes, engine, {})
+
+	const { geometry } = useRootEngine(nodes, engine, {})
+	console.log('gemoetry', geometry)
 	return (
 		<div className="App">
 			<div style={{ width: 800, height: 400 }}>
@@ -285,14 +197,16 @@ const App = () => {
 					nodeTypes={config.nodeTypes}
 					portTypes={config.portTypes}
 					defaultNodes={[
-						{ type: 'geometry', x: 190, y: -150 },
-						{ type: 'homepage', x: 300, y: 300 },
-						{ type: 'number', x: 200, y: 200 }
+						//	{ type: 'geometry', x: 190, y: -150 },
+						{ type: 'three-canvas', x: 300, y: 300 },
+						{ type: 'number', x: 200, y: 200 },
+						{ type: 'number', x: 250, y: 200 }
 					]}
 					onChange={setNodes}
 				/>
-				<Homepage nodes={nodes} />
 			</div>
+
+			<ThreeCanvas geometry={geometry} />
 		</div>
 	)
 }
