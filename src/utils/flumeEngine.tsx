@@ -1,31 +1,9 @@
 import { RootEngine, FlumeConfig } from 'flume'
 import React, { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
+import Box from '../three/nodes/geometry/Box.tsx'
+import Capsule from '../three/nodes/geometry/Capsule.tsx'
 const flumeConfig = new FlumeConfig()
-
-function Box(props) {
-	// This reference gives us direct access to the THREE.Mesh object
-	//const ref = useRef()
-	// Hold state for hovered and clicked events
-	//const [hovered, hover] = useState(false)
-	//const [clicked, click] = useState(false)
-	// Subscribe this component to the render-loop, rotate the mesh every frame
-	//useFrame((state, delta) => (ref.current.rotation.x += delta))
-	// Return the view, these are regular Threejs elements expressed in JSX
-	return (
-		<mesh
-			{...props}
-		//			ref={ref}
-		//	scale={clicked ? 1.5 : 1}
-		//	onClick={event => click(!clicked)}
-		//	onPointerOver={event => hover(true)}
-		//	onPointerOut={event => hover(false)}
-		>
-			<boxGeometry args={[1, 1, 1]} />
-			<meshStandardMaterial color={'orange'} />
-		</mesh>
-	)
-}
 
 //ROOT ENGINE
 
@@ -58,9 +36,19 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 			return { joinedText: inputValues.string1 + inputValues.string2 }
 		case 'reverseBoolean':
 			return { boolean: !inputValues.boolean }
-		case 'geometry':
-			const { posX, posY, posZ } = inputValues
-			return { geometry: [<Box position={[posX, posY, posZ]} />] }
+		case 'BoxGeometry':
+			return { geometry: [<Box data={inputValues} />] }
+		case 'CapsuleGeometry':
+			return { geometry: [<Capsule data={inputValues} />] }
+		case 'merge':
+			console.log('inputValues', inputValues)
+			let mergedInputs = []
+
+			for (let input in inputValues) {
+				mergedInputs.push(inputValues[input])
+			}
+			console.log('mergedInputs', mergedInputs)
+			return { geometry: mergedInputs }
 		case 'compose':
 			const { template, ...inputs } = inputValues
 			const re = /\{(.*?)\}/g

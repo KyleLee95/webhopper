@@ -1,14 +1,22 @@
 import React, { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 const Capsule = props => {
+	console.log('props', props)
+	const { data } = props
+	const {
+		radius,
+		length,
+		capSegments,
+		radialSegments,
+		posX,
+		posY,
+		posZ
+	} = data
 	// This reference gives us direct access to the THREE.Mesh object
 	const ref = useRef()
 	// Hold state for hovered and clicked events
 	const [hovered, hover] = useState(false)
 	const [clicked, click] = useState(false)
-	// Subscribe this component to the render-loop, rotate the mesh every frame
-	useFrame((state, delta) => (ref.current.rotation.x += delta))
-	// Return the view, these are regular Threejs elements expressed in JSX
 	return (
 		<mesh
 			{...props}
@@ -18,7 +26,9 @@ const Capsule = props => {
 			onPointerOver={event => hover(true)}
 			onPointerOut={event => hover(false)}
 		>
-			<capsuleGeometry args={[1, 1, 4, 8]} />
+			<capsuleGeometry
+				args={[radius, length, capSegments, radialSegments]}
+			/>
 			<meshBasicMaterial color={hovered ? 'hotpink' : 'orange'} />
 		</mesh>
 	)

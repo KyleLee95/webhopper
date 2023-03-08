@@ -138,7 +138,7 @@ config.addNodeType({
 })
 
 config.addNodeType({
-	type: 'geometry',
+	type: 'BoxGeometry',
 	label: 'box geometry',
 	description: 'Three Box Geometry',
 	intialWidth: 200,
@@ -154,6 +154,62 @@ config.addNodeType({
 		ports.number({
 			name: 'posZ',
 			label: 'pos Z'
+		}),
+		ports.number({
+			name: 'height',
+			label: 'height'
+		}),
+		ports.number({
+			name: 'width',
+			label: 'width'
+		}),
+		ports.number({
+			name: 'depth',
+			label: 'depth'
+		})
+	],
+	outputs: ports => (data, connections) => {
+		return [
+			ports.geometry({
+				name: 'geometry',
+				label: 'geometry'
+			})
+		]
+	}
+})
+config.addNodeType({
+	type: 'CapsuleGeometry',
+	label: 'capsule geometry',
+	description: 'Three Capsule Geometry',
+	intialWidth: 200,
+	inputs: ports => [
+		ports.number({
+			name: 'posX',
+			label: 'pos X'
+		}),
+		ports.number({
+			name: 'posY',
+			label: 'pos Y'
+		}),
+		ports.number({
+			name: 'posZ',
+			label: 'pos Z'
+		}),
+		ports.number({
+			name: 'length',
+			label: 'length'
+		}),
+		ports.number({
+			name: 'radius',
+			label: 'radius'
+		}),
+		ports.number({
+			name: 'capSegments',
+			label: 'Cap Segments'
+		}),
+		ports.number({
+			name: 'radialSegments',
+			label: 'Radial Segments'
 		})
 	],
 	outputs: ports => (data, connections) => {
@@ -178,6 +234,32 @@ config
 		]
 	})
 
+//Merge node
+
+config.addNodeType({
+	type: 'merge',
+	label: 'Merge',
+	description: 'Merge Node',
+	intialWidth: 200,
+	inputs: ports => [
+		ports.geometry({
+			name: 'input 1',
+			label: 'input 1'
+		}),
+		ports.geometry({
+			name: 'input 2',
+			label: 'input 2'
+		})
+	],
+	outputs: ports => (data, connections) => {
+		return [
+			ports.geometry({
+				name: 'geometry',
+				label: 'geometry'
+			})
+		]
+	}
+})
 const App = () => {
 	const nodeEditor = React.useRef()
 	const [nodes, setNodes] = React.useState({})
@@ -185,9 +267,10 @@ const App = () => {
 		const nodes = nodeEditor.current.getNodes()
 		// Do whatever you want with the nodes
 	}
-	const test = useRootEngine(nodes, engine, {})
 
 	const { geometry } = useRootEngine(nodes, engine, {})
+
+	console.log('geometry', geometry)
 	return (
 		<div className="App">
 			<div style={{ width: 800, height: 400 }}>
@@ -196,7 +279,7 @@ const App = () => {
 					nodeTypes={config.nodeTypes}
 					portTypes={config.portTypes}
 					defaultNodes={[
-						{ type: 'geometry', x: 190, y: -150 },
+						{ type: 'BoxGeometry', x: 190, y: -150 },
 						{ type: 'three-canvas', x: 300, y: 300 }
 					]}
 					onChange={setNodes}
