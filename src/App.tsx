@@ -188,7 +188,6 @@ const App = () => {
 	const test = useRootEngine(nodes, engine, {})
 
 	const { geometry } = useRootEngine(nodes, engine, {})
-	console.log('gemoetry', geometry)
 	return (
 		<div className="App">
 			<div style={{ width: 800, height: 400 }}>
@@ -197,10 +196,8 @@ const App = () => {
 					nodeTypes={config.nodeTypes}
 					portTypes={config.portTypes}
 					defaultNodes={[
-						//	{ type: 'geometry', x: 190, y: -150 },
-						{ type: 'three-canvas', x: 300, y: 300 },
-						{ type: 'number', x: 200, y: 200 },
-						{ type: 'number', x: 250, y: 200 }
+						{ type: 'geometry', x: 190, y: -150 },
+						{ type: 'three-canvas', x: 300, y: 300 }
 					]}
 					onChange={setNodes}
 				/>

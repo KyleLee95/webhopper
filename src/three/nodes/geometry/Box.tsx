@@ -1,6 +1,8 @@
 import React, { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 const Box = props => {
+	const { parameters } = props.geometry
+	const { height, width, depth } = parameters
 	// This reference gives us direct access to the THREE.Mesh object
 	const ref = useRef()
 	// Hold state for hovered and clicked events
@@ -18,7 +20,7 @@ const Box = props => {
 			onPointerOver={event => hover(true)}
 			onPointerOut={event => hover(false)}
 		>
-			<boxGeometry args={[1, 1, 1]} />
+			<boxGeometry args={[height, width, depth]} />
 			<meshBasicMaterial color={hovered ? 'hotpink' : 'orange'} />
 		</mesh>
 	)
