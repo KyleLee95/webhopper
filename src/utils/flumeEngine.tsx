@@ -3,6 +3,8 @@ import React, { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import Box from '../three/nodes/geometry/Box.tsx'
 import Capsule from '../three/nodes/geometry/Capsule.tsx'
+import Controls from '../three/nodes/cameras/Controls.tsx'
+import MeshStandardMaterial from '../three/nodes/materials/MeshStandardMaterial.tsx'
 const flumeConfig = new FlumeConfig()
 
 //ROOT ENGINE
@@ -37,17 +39,21 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 		case 'reverseBoolean':
 			return { boolean: !inputValues.boolean }
 		case 'BoxGeometry':
+			console.log('inputValues BoxGeometry', inputValues)
 			return { geometry: [<Box data={inputValues} />] }
 		case 'CapsuleGeometry':
 			return { geometry: [<Capsule data={inputValues} />] }
+		case 'Controls':
+			return { geometry: [<Controls />] }
+		case 'MeshStandardMaterial':
+			console.log('inputValues MeshStandardMaterial', inputValues)
+			return { material: [<MeshStandardMaterial color="orange" />] }
 		case 'merge':
-			console.log('inputValues', inputValues)
 			let mergedInputs = []
 
 			for (let input in inputValues) {
 				mergedInputs.push(inputValues[input])
 			}
-			console.log('mergedInputs', mergedInputs)
 			return { geometry: mergedInputs }
 		case 'compose':
 			const { template, ...inputs } = inputValues

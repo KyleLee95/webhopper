@@ -1,83 +1,22 @@
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, createPortal } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { config } from '../../utils/flumeEngine.tsx'
 import GeometryNode from './GeometryNode.tsx'
+import Controls from './cameras/Controls.tsx'
 
-/*
- * {
- * {
- *  //node data from canvas
- * },
- *
- *
- * {
- * threejs data
- *
- *
- * }
- *
- *
- * }
- *
- *
- *
- *
-
-const testGeometry = [
-	{
-		type: 'TorusGeometry',
-		parameters: {
-			width: 1,
-			height: 1,
-			depth: 1,
-			widthSegments: 1,
-			heightSegments: 1,
-			depthSegments: 1
-		}
-	},
-	{
-		type: 'CircleGeometry',
-		parameters: {
-			width: 1,
-			height: 1,
-			depth: 1,
-			widthSegments: 1,
-			heightSegments: 1,
-			depthSegments: 1
-		}
-	},
-	{
-		type: 'CapsuleGeometry',
-		parameters: {
-			radius: 1,
-			depth: 1,
-			capSegments: 4,
-			radialSegments: 8
-		}
-	},
-	{
-		type: 'BoxGeometry',
-		parameters: {
-			width: 1,
-			height: 1,
-			depth: 1,
-			widthSegments: 1,
-			heightSegments: 1,
-			depthSegments: 1
-		}
-	}
-]*/
 const ThreeCanvas = ({ geometry }) => {
 	return (
-		<Canvas>
+		<Canvas camera={{ near: 0.1, far: 1000000 }}>
 			<ambientLight />
 			<pointLight position={[10, 10, 10]} />
+			<axesHelper args={[999999]} />
+			<gridHelper args={[9999, 50]} />
+			<Controls />
 			{geometry?.map(geom => {
 				return geom
 			})}
-			/*
-</Canvas>
-)
+		</Canvas>
+	)
 }
 
 //ROOT NODE

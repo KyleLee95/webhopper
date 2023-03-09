@@ -11,7 +11,8 @@ import {
 } from 'flume'
 import { engine, config } from './utils/flumeEngine.tsx'
 import { Canvas, useFrame } from '@react-three/fiber'
-
+import RenderInWindoow from './three/nodes/NewWindowWrapper.tsx'
+import RenderInWindow from './three/nodes/NewWindowWrapper'
 //basic string node
 config
 	.addPortType({
@@ -56,6 +57,12 @@ config
 		label: 'geometry',
 		color: Colors.orange
 	})
+	.addPortType({
+		type: 'material',
+		name: 'material',
+		label: 'material',
+		color: Colors.orange
+	})
 
 config
 	.addNodeType({
@@ -81,7 +88,6 @@ config
 		inputs: ports => [ports.number()],
 		outputs: ports => [ports.number()]
 	})
-
 config.addNodeType({
 	type: 'threeRoot',
 	label: 'canvas',
@@ -143,6 +149,10 @@ config.addNodeType({
 	description: 'Three Box Geometry',
 	intialWidth: 200,
 	inputs: ports => [
+		ports.material({
+			name: 'material',
+			label: 'material'
+		}),
 		ports.number({
 			name: 'posX',
 			label: 'pos X'
@@ -249,6 +259,18 @@ config.addNodeType({
 		ports.geometry({
 			name: 'input 2',
 			label: 'input 2'
+		}),
+		ports.geometry({
+			name: 'input 3',
+			label: 'input 3'
+		}),
+		ports.geometry({
+			name: 'input 4',
+			label: 'input 4'
+		}),
+		ports.geometry({
+			name: 'input 5',
+			label: 'input 5'
 		})
 	],
 	outputs: ports => (data, connections) => {
@@ -260,6 +282,39 @@ config.addNodeType({
 		]
 	}
 })
+
+config.addNodeType({
+	type: 'MeshStandardMaterial',
+	label: 'Mesh Standard Material',
+	description: 'three mesh standard mateiral',
+	initialWidth: 200,
+	outputs: ports => (data, connections) => {
+		return [
+			ports.material({
+				name: 'material',
+				label: 'material'
+			})
+		]
+	}
+})
+
+config.addNodeType({
+	type: 'Controls',
+	label: 'Controls',
+	description: 'Camera Controls',
+	intialWidth: 200,
+	outputs: ports => (data, connections) => {
+		return [
+			ports.geometry({
+				name: 'geometry',
+				label: 'geometry'
+			})
+		]
+	}
+})
+
+const open3DWindowViewer = () => { }
+
 const App = () => {
 	const nodeEditor = React.useRef()
 	const [nodes, setNodes] = React.useState({})
@@ -270,10 +325,12 @@ const App = () => {
 
 	const { geometry } = useRootEngine(nodes, engine, {})
 
-	console.log('geometry', geometry)
 	return (
 		<div className="App">
-			<div style={{ width: 800, height: 400 }}>
+			<div style={{ height: '5%' }}>
+				<button>Open 3D Viewer</button>
+			</div>
+			<div style={{ width: '100%', height: '95%' }}>
 				<NodeEditor
 					ref={nodeEditor}
 					nodeTypes={config.nodeTypes}
@@ -285,8 +342,9 @@ const App = () => {
 					onChange={setNodes}
 				/>
 			</div>
-
-			<ThreeCanvas geometry={geometry} />
+			<RenderInWindow>
+				<ThreeCanvas geometry={geometry} />
+			</RenderInWindow>
 		</div>
 	)
 }
