@@ -12,9 +12,8 @@ const SceneObjects = props => {
 
 	return (
 
-		props.children.map((child: unknown, i: number) => {
-			return <SceneObject child key={i} />
-		})
+	)
 
-	
+
+
 }

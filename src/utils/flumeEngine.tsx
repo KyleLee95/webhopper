@@ -5,6 +5,7 @@ import Box from '../three/nodes/geometry/Box.tsx'
 import Capsule from '../three/nodes/geometry/Capsule.tsx'
 import Controls from '../three/nodes/cameras/Controls.tsx'
 import MeshStandardMaterial from '../three/nodes/materials/MeshStandardMaterial.tsx'
+import MeshBasicMaterial from '../three/nodes/materials/MeshBasicMaterial.tsx'
 const flumeConfig = new FlumeConfig()
 
 //ROOT ENGINE
@@ -39,20 +40,52 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 		case 'reverseBoolean':
 			return { boolean: !inputValues.boolean }
 		case 'BoxGeometry':
-			console.log('inputValues BoxGeometry', inputValues)
-			return { geometry: [<Box data={inputValues} />] }
+			return {
+				geometry: [{ ...inputValues, type: 'BoxGeometry' }]
+			}
+
 		case 'CapsuleGeometry':
-			return { geometry: [<Capsule data={inputValues} />] }
+			return {
+				geometry: [
+					{
+						...inputValues,
+						type: 'CapsuleGeometry'
+					}
+				]
+			}
+		case 'TorusGeometry':
+			return {
+				geometry: [{ ...inputValues, type: 'TorusGeometry' }]
+			}
+		case 'CircleGeometry':
+			return {
+				geometry: [
+					{
+						...inputValues,
+						type: 'CircleGeometry'
+					}
+				]
+			}
 		case 'Controls':
 			return { geometry: [<Controls />] }
 		case 'MeshStandardMaterial':
-			console.log('inputValues MeshStandardMaterial', inputValues)
-			return { material: [<MeshStandardMaterial color="orange" />] }
+			return {
+				material: { type: 'MeshStandardMaterial', ...inputValues }
+			}
+		case 'MeshBasicMaterial':
+			return {
+				material: { type: 'MeshBasicMaterial', ...inputValues }
+			}
+		case 'mirror':
+			return {
+				geometry: []
+			}
 		case 'merge':
 			let mergedInputs = []
-
 			for (let input in inputValues) {
-				mergedInputs.push(inputValues[input])
+				if (inputValues[input] != undefined) {
+					mergedInputs.push(inputValues[input][0])
+				}
 			}
 			return { geometry: mergedInputs }
 		case 'compose':

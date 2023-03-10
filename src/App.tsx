@@ -193,6 +193,10 @@ config.addNodeType({
 	description: 'Three Capsule Geometry',
 	intialWidth: 200,
 	inputs: ports => [
+		ports.material({
+			name: 'material',
+			label: 'material'
+		}),
 		ports.number({
 			name: 'posX',
 			label: 'pos X'
@@ -231,45 +235,137 @@ config.addNodeType({
 		]
 	}
 })
-//ROOT NODE
 
-config
-	/*  ...  */
-	.addRootNodeType({
-		type: 'three-canvas',
-		label: 'Three Canvas',
-		initialWidth: 170,
-		inputs: ports => [
-			ports.geometry({ name: 'geometry', label: 'geometry' })
+config.addNodeType({
+	type: 'TorusGeometry',
+	label: 'Torus Geometry',
+	description: 'Three Torus Geometry',
+	intialWidth: 200,
+	inputs: ports => [
+		ports.material({
+			name: 'material',
+			label: 'material'
+		}),
+		ports.number({
+			name: 'posX',
+			label: 'pos X'
+		}),
+		ports.number({
+			name: 'posY',
+			label: 'pos Y'
+		}),
+		ports.number({
+			name: 'posZ',
+			label: 'pos Z'
+		}),
+		ports.number({
+			name: 'radius',
+			label: 'Radius'
+		}),
+		ports.number({
+			name: 'tube',
+			label: 'Tube'
+		}),
+
+		ports.number({
+			name: 'radialSegements',
+			label: 'Radial Segments'
+		}),
+		ports.number({
+			name: 'tubularSegments',
+			label: 'Tubular Segments'
+		}),
+		ports.number({
+			name: 'arc',
+			label: 'Arc'
+		})
+	],
+	outputs: ports => (data, connections) => {
+		return [
+			ports.geometry({
+				name: 'geometry',
+				label: 'geometry'
+			})
 		]
-	})
+	}
+})
+
+config.addNodeType({
+	type: 'CircleGeometry',
+	label: 'Circle Geometry',
+	description: 'Three Circle Geometry',
+	intialWidth: 200,
+	inputs: ports => [
+		ports.material({
+			name: 'material',
+			label: 'material'
+		}),
+		ports.number({
+			name: 'posX',
+			label: 'pos X'
+		}),
+		ports.number({
+			name: 'posY',
+			label: 'pos Y'
+		}),
+		ports.number({
+			name: 'posZ',
+			label: 'pos Z'
+		}),
+		ports.number({
+			name: 'length',
+			label: 'length'
+		}),
+		ports.number({
+			name: 'segments',
+			label: 'Segments'
+		}),
+
+		ports.number({
+			name: 'thetaStart',
+			label: 'Theta Start'
+		}),
+		ports.number({
+			name: 'thetaLength',
+			label: 'Theta Length'
+		})
+	],
+	outputs: ports => (data, connections) => {
+		return [
+			ports.geometry({
+				name: 'geometry',
+				label: 'geometry'
+			})
+		]
+	}
+})
 
 //Merge node
 
 config.addNodeType({
 	type: 'merge',
 	label: 'Merge',
-	description: 'Merge Node',
+	description: 'Merge Nodes',
 	intialWidth: 200,
 	inputs: ports => [
 		ports.geometry({
-			name: 'input 1',
+			name: 'input1',
 			label: 'input 1'
 		}),
 		ports.geometry({
-			name: 'input 2',
+			name: 'input2',
 			label: 'input 2'
 		}),
 		ports.geometry({
-			name: 'input 3',
+			name: 'input3',
 			label: 'input 3'
 		}),
 		ports.geometry({
-			name: 'input 4',
+			name: 'input4',
 			label: 'input 4'
 		}),
 		ports.geometry({
-			name: 'input 5',
+			name: 'input5',
 			label: 'input 5'
 		})
 	],
@@ -284,20 +380,72 @@ config.addNodeType({
 })
 
 config.addNodeType({
-	type: 'MeshStandardMaterial',
-	label: 'Mesh Standard Material',
-	description: 'three mesh standard mateiral',
+	type: 'mirror',
+	label: 'Mirror',
+	description: 'Mirror Geometry',
 	initialWidth: 200,
+	inputs: ports => [
+		ports.geometry({
+			name: 'geometry',
+			label: 'Geometry to be Mirrored'
+		}),
+		ports.geometry({
+			name: 'plane',
+			label: 'Plane to mirror over'
+		})
+	],
 	outputs: ports => (data, connections) => {
 		return [
-			ports.material({
-				name: 'material',
-				label: 'material'
+			ports.geometry({
+				name: 'geometry',
+				label: 'geometry'
 			})
 		]
 	}
 })
 
+config
+	.addNodeType({
+		type: 'MeshStandardMaterial',
+		label: 'Mesh Standard Material',
+		description: 'three mesh standard mateiral',
+		initialWidth: 200,
+		outputs: ports => (data, connections) => {
+			return [
+				ports.material({
+					name: 'material',
+					label: 'material'
+				})
+			]
+		}
+	})
+	.addNodeType({
+		type: 'MeshBasicMaterial',
+		label: 'Mesh Basic Material',
+		description: 'three mesh basic material',
+		initialWidth: 200,
+		outputs: ports => (data, connections) => {
+			return [
+				ports.material({
+					name: 'material',
+					label: 'material'
+				})
+			]
+		}
+	})
+
+//ROOT NODE
+
+config
+	/*  ...  */
+	.addRootNodeType({
+		type: 'three-canvas',
+		label: 'Three Canvas',
+		initialWidth: 170,
+		inputs: ports => [
+			ports.geometry({ name: 'geometry', label: 'geometry' })
+		]
+	})
 config.addNodeType({
 	type: 'Controls',
 	label: 'Controls',

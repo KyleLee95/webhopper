@@ -2,7 +2,10 @@ import React, { useRef, useState, createPortal } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { config } from '../../utils/flumeEngine.tsx'
 import GeometryNode from './GeometryNode.tsx'
+import MeshNode from './MeshNode.tsx'
+import MaterialNode from './MaterialNode.tsx'
 import Controls from './cameras/Controls.tsx'
+import MeshStandardMaterial from './materials/MeshStandardMaterial'
 
 const ThreeCanvas = ({ geometry }) => {
 	return (
@@ -13,7 +16,18 @@ const ThreeCanvas = ({ geometry }) => {
 			<gridHelper args={[9999, 50]} />
 			<Controls />
 			{geometry?.map(geom => {
-				return geom
+				console.log('geometry', geom)
+				return (
+					<MeshNode geometry={geom}>
+						<GeometryNode geometry={geom} type={geom.type} />
+						{geom.material ? (
+							<MaterialNode
+								material={geom.material}
+								type={geom.material.type}
+							/>
+						) : null}
+					</MeshNode>
+				)
 			})}
 		</Canvas>
 	)

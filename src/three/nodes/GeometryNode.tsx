@@ -4,16 +4,16 @@ import { CapsuleGeometry } from 'three'
 import Box from './geometry/Box.tsx'
 import Capsule from './geometry/Capsule.tsx'
 import Circle from './geometry/Circle.tsx'
-import Torus from './Torus.tsx'
+import Torus from './geometry/Torus.tsx'
 const GeometryNode = props => {
 	const { type, geometry } = props
 	switch (type) {
 		case 'BoxGeometry':
 			return <Box geometry={geometry} />
 		case 'CapsuleGeometry':
-			return <Capsule />
+			return <Capsule geometry={geometry} />
 		case 'CircleGeometry':
-			return <Circle />
+			return <Circle geometry={geometry} />
 		case 'CylinderGeometry':
 			return new THREE.CylinderGeometry()
 		case 'DodecahedronGeometry':
@@ -41,7 +41,7 @@ const GeometryNode = props => {
 		case 'TetrahedronGeometry':
 			return new THREE.CapsuleGeometry()
 		case 'TorusGeometry':
-			return <Torus position={[-1, 1, 1]} />
+			return <Torus geometry={geometry} />
 		case 'TorusKnotGeometry':
 			return new THREE.CapsuleGeometry()
 		case 'TubeGeometry':

@@ -1,11 +1,14 @@
 import React from 'react'
 import MeshStandardMaterial from './materials/MeshStandardMaterial.tsx'
+import MeshBasicMaterial from './materials/MeshBasicMaterial.tsx'
 import * as THREE from 'three'
 const MaterialNode = props => {
 	const { type, material } = props
 	switch (type) {
 		case 'MeshStandardMaterial':
 			return <MeshStandardMaterial material={material} />
+		case 'MeshBasicMaterial':
+			return <MeshBasicMaterial material={material} />
 		case 'CapsuleGeometry':
 			return []
 		case 'CircleGeometry':
@@ -44,6 +47,8 @@ const MaterialNode = props => {
 			return new THREE.CapsuleGeometry()
 		case 'WireframeGeometry':
 			return new THREE.CapsuleGeometry()
+		default:
+			return <MeshStandardMaterial material={material} />
 	}
 }
 
