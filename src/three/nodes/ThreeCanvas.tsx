@@ -15,24 +15,19 @@ const ThreeCanvas = ({ geometry }) => {
 			<axesHelper args={[999999]} />
 			<gridHelper args={[9999, 50]} />
 			<Controls />
-			{geometry?.map(geom => {
-				console.log('geometry', geom)
+			{geometry?.map((geom, i) => {
 				return (
-					<MeshNode geometry={geom}>
+					<MeshNode key={i} geometry={geom}>
 						<GeometryNode geometry={geom} type={geom.type} />
-						{geom.material ? (
-							<MaterialNode
-								material={geom.material}
-								type={geom.material.type}
-							/>
-						) : null}
+						<MaterialNode
+							material={geom.material}
+							type={geom.material.type}
+						/>
 					</MeshNode>
 				)
 			})}
 		</Canvas>
 	)
 }
-
-//ROOT NODE
 
 export default ThreeCanvas
