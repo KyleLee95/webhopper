@@ -4,6 +4,7 @@ import MeshBasicMaterial from './materials/MeshBasicMaterial.tsx'
 import * as THREE from 'three'
 const MaterialNode = props => {
 	const { type, material } = props
+
 	switch (type) {
 		case 'MeshStandardMaterial':
 			return <MeshStandardMaterial material={material} />

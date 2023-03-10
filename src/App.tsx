@@ -63,6 +63,12 @@ config
 		label: 'material',
 		color: Colors.orange
 	})
+	.addPortType({
+		type: 'vector',
+		name: 'vector',
+		label: 'vector',
+		color: Colors.green
+	})
 
 config
 	.addNodeType({
@@ -176,6 +182,10 @@ config.addNodeType({
 		ports.number({
 			name: 'depth',
 			label: 'depth'
+		}),
+		ports.vector({
+			name: 'rotation',
+			label: 'rotation'
 		})
 	],
 	outputs: ports => (data, connections) => {
@@ -340,6 +350,58 @@ config.addNodeType({
 	}
 })
 
+config.addNodeType({
+	type: 'PlaneGeometry',
+	label: 'Plane Geometry',
+	description: 'Three Plane Geometry',
+	intialWidth: 200,
+	inputs: ports => [
+		ports.material({
+			name: 'material',
+			label: 'material'
+		}),
+		ports.number({
+			name: 'posX',
+			label: 'pos X'
+		}),
+		ports.number({
+			name: 'posY',
+			label: 'pos Y'
+		}),
+		ports.number({
+			name: 'posZ',
+			label: 'pos Z'
+		}),
+		ports.number({
+			name: 'width',
+			label: 'width'
+		}),
+		ports.number({
+			name: 'height',
+			label: 'height'
+		}),
+		ports.number({
+			name: 'widthSegments',
+			label: 'widthSegments'
+		}),
+		ports.number({
+			name: 'heightSegments',
+			label: 'heightSegments'
+		}),
+		ports.vector({
+			name: 'rotation',
+			label: 'rotation'
+		})
+	],
+	outputs: ports => (data, connections) => {
+		return [
+			ports.geometry({
+				name: 'geometry',
+				label: 'geometry'
+			})
+		]
+	}
+})
 //Merge node
 
 config.addNodeType({
@@ -399,6 +461,35 @@ config.addNodeType({
 			ports.geometry({
 				name: 'geometry',
 				label: 'geometry'
+			})
+		]
+	}
+})
+
+config.addNodeType({
+	type: 'vector',
+	label: 'vector',
+	description: 'vector XYZ',
+	intialWidth: 200,
+	inputs: ports => [
+		ports.number({
+			name: 'rotX',
+			label: 'x'
+		}),
+		ports.number({
+			name: 'rotY',
+			label: 'y'
+		}),
+		ports.number({
+			name: 'rotZ',
+			label: 'z'
+		})
+	],
+	outputs: ports => (data, conenctions) => {
+		return [
+			ports.vector({
+				name: 'vector',
+				label: 'vector XYZ'
 			})
 		]
 	}

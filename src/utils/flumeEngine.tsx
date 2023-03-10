@@ -3,6 +3,9 @@ import React, { useRef, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import Box from '../three/nodes/geometry/Box.tsx'
 import Capsule from '../three/nodes/geometry/Capsule.tsx'
+import Circle from '../three/nodes/geometry/Circle.tsx'
+import Torus from '../three/nodes/geometry/Torus.tsx'
+import Plane from '../three/nodes/geometry/Plane.tsx'
 import Controls from '../three/nodes/cameras/Controls.tsx'
 import MeshStandardMaterial from '../three/nodes/materials/MeshStandardMaterial.tsx'
 import MeshBasicMaterial from '../three/nodes/materials/MeshBasicMaterial.tsx'
@@ -25,6 +28,11 @@ const resolvePorts = (portType, data) => {
 	}
 }
 
+/***
+ *
+ * We pass the instance (read: the literal JSX component) around so that
+ * we have access to the methods on the instance + it gives us access to do things imperatively here in the reducer
+ */
 const resolveNodes = (node, inputValues, nodeType, context) => {
 	switch (node.type) {
 		case 'string':
@@ -41,7 +49,15 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 			return { boolean: !inputValues.boolean }
 		case 'BoxGeometry':
 			return {
-				geometry: [{ ...inputValues, type: 'BoxGeometry' }]
+				geometry: [
+					{
+						instance: (
+							<Box geometry={{ height: 1, depth: 1, width: 1 }} />
+						),
+						...inputValues,
+						type: 'BoxGeometry'
+					}
+				]
 			}
 
 		case 'CapsuleGeometry':
@@ -49,20 +65,38 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 				geometry: [
 					{
 						...inputValues,
+						instance: <Capsule geometry={{ ...inputValues }} />,
 						type: 'CapsuleGeometry'
 					}
 				]
 			}
 		case 'TorusGeometry':
 			return {
-				geometry: [{ ...inputValues, type: 'TorusGeometry' }]
+				geometry: [
+					{
+						...inputValues,
+						instance: <Torus geometry={{ ...inputValues }} />,
+						type: 'TorusGeometry'
+					}
+				]
 			}
 		case 'CircleGeometry':
 			return {
 				geometry: [
 					{
 						...inputValues,
+						instance: <Circle geometry={{ ...inputValues }} />,
 						type: 'CircleGeometry'
+					}
+				]
+			}
+		case 'PlaneGeometry':
+			return {
+				geometry: [
+					{
+						...inputValues,
+						instance: <Plane geometry={{ ...inputValues }} />,
+						type: 'PlaneGeometry'
 					}
 				]
 			}
@@ -76,10 +110,57 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 			return {
 				material: { type: 'MeshBasicMaterial', ...inputValues }
 			}
-		case 'mirror':
+		case 'rotation':
 			return {
-				geometry: []
+				vector: {
+					...inputValues
+				}
 			}
+		case 'vector':
+			return {
+				vector: {
+					...inputValues
+				}
+			}
+		case 'mirror':
+			console.log('inputvalues', inputValues)
+
+			const { posX, posY, posZ } = inputValues.geometry[0]
+
+			const reflected = [
+				[
+					(1 + (-1 - 1) * posX) ^ 2,
+					(-1 - 1) * posX * posY,
+					(-1 - 1) * posX * posZ
+				],
+				[
+					(-1 - 1) * posX * posY,
+					(1 + (-1 - 1) * posY) ^ 2,
+					(-1 - 1) * posY * posZ
+				],
+				[
+					(-1 - 1) * posX * posZ,
+					(-1 - 1) * posY * posZ,
+					(1 + (-1 - 1) * posZ) ^ 2
+				]
+			]
+
+			console.log('reflected', reflected)
+			const vertices = new Float32Array([
+				(1 + (-1 - 1) * posX) ^ 2,
+				(-1 - 1) * posX * posY,
+				(-1 - 1) * posX * posZ,
+				(-1 - 1) * posX * posY,
+				(1 + (-1 - 1) * posY) ^ 2,
+				(-1 - 1) * posY * posZ,
+				(-1 - 1) * posX * posZ,
+				(-1 - 1) * posY * posZ,
+				(1 + (-1 - 1) * posZ) ^ 2
+			])
+			return {
+				geometry: [<bufferGeometry position={[vertices, 4]} />]
+			}
+
 		case 'merge':
 			let mergedInputs = []
 			for (let input in inputValues) {

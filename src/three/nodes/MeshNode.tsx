@@ -1,8 +1,12 @@
-import React from 'react'
-
+import React, { useRef } from 'react'
+import { Center } from '@react-three/drei'
+import * as THREE from 'three'
 const MeshNode = props => {
+	console.log('meshnode props', props)
 	const { geometry } = props
-	const { posX, posY, posZ } = geometry
+	const { posX, posY, posZ, rotation } = geometry
+	//because rotation can be an empty object, having || 0 in the rotation props keeps it from breaking.
+	const { rotX, rotY, rotZ } = rotation
 	return (
 		<mesh
 			onClick={e => console.log('click')}
@@ -18,7 +22,8 @@ const MeshNode = props => {
 			onPointerMove={e => console.log('move')}
 			onPointerMissed={() => console.log('missed')}
 			onUpdate={self => console.log('props have been updated')}
-			position={[posX, posY, posZ]}
+			position={[posX, posZ, posY]}
+			rotation={[rotX || 0, rotZ || 0, rotY || 0]}
 		>
 			{props.children}
 		</mesh>

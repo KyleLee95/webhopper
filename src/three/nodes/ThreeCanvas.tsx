@@ -16,13 +16,11 @@ const ThreeCanvas = ({ geometry }) => {
 			<gridHelper args={[9999, 50]} />
 			<Controls />
 			{geometry?.map((geom, i) => {
+				console.log('geom', geom)
 				return (
 					<MeshNode key={i} geometry={geom}>
-						<GeometryNode geometry={geom} type={geom.type} />
-						<MaterialNode
-							material={geom.material}
-							type={geom.material.type}
-						/>
+						<GeometryNode geometry={geom} />
+						<MaterialNode material={geom.material} />
 					</MeshNode>
 				)
 			})}
