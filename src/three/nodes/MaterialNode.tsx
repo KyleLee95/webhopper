@@ -2,6 +2,13 @@ import React from 'react'
 import MeshStandardMaterial from './materials/MeshStandardMaterial.tsx'
 import MeshBasicMaterial from './materials/MeshBasicMaterial.tsx'
 import * as THREE from 'three'
+
+/***
+ *
+ *
+ * Keep this exactly as is.
+ *
+ */
 const MaterialNode = props => {
 	const { type, material } = props
 

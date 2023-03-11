@@ -1,4 +1,4 @@
-import React, { useRef, useState, createPortal } from 'react'
+import React, { useRef, useState, forwardRef, createPortal } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
 import { config } from '../../utils/flumeEngine.tsx'
 import GeometryNode from './GeometryNode.tsx'
@@ -7,7 +7,9 @@ import MaterialNode from './MaterialNode.tsx'
 import Controls from './cameras/Controls.tsx'
 import MeshStandardMaterial from './materials/MeshStandardMaterial'
 
-const ThreeCanvas = ({ geometry }) => {
+const ThreeCanvas = forwardRef((props, ref) => {
+	const { geometry } = props
+	const { references } = props
 	return (
 		<Canvas camera={{ near: 0.1, far: 1000000 }}>
 			<ambientLight />
@@ -17,15 +19,10 @@ const ThreeCanvas = ({ geometry }) => {
 			<Controls />
 			{geometry?.map((geom, i) => {
 				console.log('geom', geom)
-				return (
-					<MeshNode key={i} geometry={geom}>
-						<GeometryNode geometry={geom} />
-						<MaterialNode material={geom.material} />
-					</MeshNode>
-				)
+				return geom.instance
 			})}
 		</Canvas>
 	)
-}
+})
 
 export default ThreeCanvas

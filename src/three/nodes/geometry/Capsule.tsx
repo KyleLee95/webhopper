@@ -3,15 +3,7 @@ import MeshBasicMaterial from '../materials/MeshBasicMaterial.tsx'
 import { useFrame } from '@react-three/fiber'
 const Capsule = props => {
 	const { geometry } = props
-	const {
-		radius,
-		length,
-		capSegments,
-		radialSegments,
-		posX,
-		posY,
-		posZ
-	} = geometry
+	const { radius, length, capSegments, radialSegments } = geometry
 	// This reference gives us direct access to the THREE.Mesh object
 	const ref = useRef()
 	// Hold state for hovered and clicked events

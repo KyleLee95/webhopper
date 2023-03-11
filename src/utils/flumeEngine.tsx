@@ -1,7 +1,6 @@
 import { RootEngine, FlumeConfig } from 'flume'
 import React, { useRef, useState, forwardRef } from 'react'
 import * as THREE from 'three'
-import { useFrame } from '@react-three/fiber'
 import Box from '../three/nodes/geometry/Box.tsx'
 import Capsule from '../three/nodes/geometry/Capsule.tsx'
 import Circle from '../three/nodes/geometry/Circle.tsx'
@@ -10,6 +9,8 @@ import Plane from '../three/nodes/geometry/Plane.tsx'
 import Controls from '../three/nodes/cameras/Controls.tsx'
 import MeshStandardMaterial from '../three/nodes/materials/MeshStandardMaterial.tsx'
 import MeshBasicMaterial from '../three/nodes/materials/MeshBasicMaterial.tsx'
+
+import MeshNode from '../three/nodes/MeshNode.tsx'
 const flumeConfig = new FlumeConfig()
 
 //ROOT ENGINE
@@ -23,7 +24,11 @@ const resolvePorts = (portType, data) => {
 		case 'number':
 			return data.number
 		case 'geometry':
-			return data.geometry
+			if (data.geometry === undefined) {
+				return []
+			} else {
+				return data.geometry
+			}
 		default:
 			return data
 	}
@@ -32,12 +37,13 @@ const resolvePorts = (portType, data) => {
 /***
  *
  * We pass the instance (read: the literal JSX component) around so that
- * we have access to the methods on the instance + it gives us access to do things imperatively here in the reducer
+ * we have access to the methods on the instance + it gives us access to do things imperatively here in the reducer.
+ *
+ * The flume engine is the single source of truth.
  */
 const resolveNodes = (node, inputValues, nodeType, context) => {
-	console.log(inputValues)
-	const meshBox = useRef(null)
-	console.log('meshBox', meshBox)
+	console.log('CONTEXT IN NODE RESOLVER:', context)
+
 	switch (node.type) {
 		case 'string':
 			return { string: inputValues.string }
@@ -52,11 +58,15 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 		case 'reverseBoolean':
 			return { boolean: !inputValues.boolean }
 		case 'BoxGeometry':
+			console.log('runs here')
 			return {
 				geometry: [
 					{
 						instance: (
-							<Box ref={meshBox} geometry={{ ...inputValues }} />
+							<MeshNode
+								ref={context.references[0]} //need to be able to dynamically geterate an id on the fly in order to access the correct reference.
+								geometry={{ ...inputValues }}
+							/>
 						),
 						...inputValues,
 						type: 'BoxGeometry'
@@ -127,8 +137,6 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 				}
 			}
 		case 'mirror':
-			console.log('inputvalues', inputValues)
-
 			const {
 				posX,
 				posY,
@@ -141,16 +149,14 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 				type
 			} = inputValues.geometry[0]
 
-			const planeX = inputValues.plane[0].posX
-			const planeY = inputValues.plane[0].posY
-			const planeZ = inputValues.plane[0].posZ
+			//const planeX = inputValues.plane[0].posX
+			//const planeY = inputValues.plane[0].posY
+			//const planeZ = inputValues.plane[0].posZ
 			return {
 				geometry: [
 					{
 						instance: <Box geometry={{ height, depth, width }} />,
-						posX: planeX + (planeX - posX),
-						posY: planeY + (planeY - posY),
-						posZ: planeZ + posZ,
+						...inputValues.geometry[0],
 						rotation,
 						material,
 						type
@@ -160,7 +166,7 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 		case 'merge':
 			let mergedInputs = []
 			for (let input in inputValues) {
-				if (inputValues[input] != undefined) {
+				if (inputValues[input].length > 0) {
 					mergedInputs.push(inputValues[input][0])
 				}
 			}

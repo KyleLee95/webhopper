@@ -1,6 +1,12 @@
 import './App.css'
 import ThreeCanvas from './three/nodes/ThreeCanvas.tsx'
-import React, { useState, useRef, useCallback } from 'react'
+import React, {
+	useState,
+	forwardRef,
+	createRef,
+	useRef,
+	useCallback
+} from 'react'
 import {
 	useRootEngine,
 	RootEngine,
@@ -10,9 +16,11 @@ import {
 	NodeEditor
 } from 'flume'
 import { engine, config } from './utils/flumeEngine.tsx'
-import { Canvas, useFrame } from '@react-three/fiber'
-import RenderInWindoow from './three/nodes/NewWindowWrapper.tsx'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import RenderInWindow from './three/nodes/NewWindowWrapper'
+import GeometryNode from './three/nodes/GeometryNode.tsx'
+import MeshNode from './three/nodes/MeshNode.tsx'
+import MaterialNode from './three/nodes/MaterialNode.tsx'
 //basic string node
 config
 	.addPortType({
@@ -234,6 +242,10 @@ config.addNodeType({
 		ports.number({
 			name: 'radialSegments',
 			label: 'Radial Segments'
+		}),
+		ports.vector({
+			name: 'rotation',
+			label: 'rotation'
 		})
 	],
 	outputs: ports => (data, connections) => {
@@ -552,8 +564,6 @@ config.addNodeType({
 	}
 })
 
-const open3DWindowViewer = () => { }
-
 const App = () => {
 	const nodeEditor = React.useRef()
 	const [nodes, setNodes] = React.useState({})
@@ -561,9 +571,18 @@ const App = () => {
 		const nodes = nodeEditor.current.getNodes()
 		// Do whatever you want with the nodes
 	}
+	const referenceLength = 10
+	const initialReferences = Array(referenceLength)
+		.fill(0)
+		.map(() => React.createRef())
 
-	const { geometry } = useRootEngine(nodes, engine, {})
-
+	const [references, setReferences] = React.useState(initialReferences)
+	//const referenceLength = geometry !== undefined ? geometry.length : 1
+	//
+	const { geometry } = useRootEngine(nodes, engine, {
+		references: references
+	})
+	console.log('references', references)
 	return (
 		<div className="App">
 			<div style={{ height: '5%' }}>
@@ -580,12 +599,34 @@ const App = () => {
 					]}
 					onChange={setNodes}
 				/>
+				<RenderInWindow>
+					<ThreeCanvas references={references} geometry={geometry} />
+				</RenderInWindow>
 			</div>
-			<RenderInWindow>
-				<ThreeCanvas geometry={geometry} />
-			</RenderInWindow>
 		</div>
 	)
 }
 
+/*
+ *
+ *
+			<RenderInWindow>
+				<Canvas camera={{ near: 0.1, far: 1000000 }}>
+					<ambientLight />
+					<pointLight position={[10, 10, 10]} />
+					<axesHelper args={[999999]} />
+					<gridHelper args={[9999, 50]} />
+					<Controls />
+					{geometry?.length?.map((geom, i) => {
+						console.log('geom', geom)
+						return (
+							<MeshNode key={i} geometry={geom}>
+								<GeometryNode geometry={geom} />
+								<MaterialNode material={geom.material} />
+							</MeshNode>
+						)
+					})}
+				</Canvas>
+			</RenderInWindow>
+ * <ThreeCanvas ref={threeMeshes} geometry={geometry} />*/
 export default App
