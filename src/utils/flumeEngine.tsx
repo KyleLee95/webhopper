@@ -1,5 +1,6 @@
 import { RootEngine, FlumeConfig } from 'flume'
-import React, { useRef, useState } from 'react'
+import React, { useRef, useState, forwardRef } from 'react'
+import * as THREE from 'three'
 import { useFrame } from '@react-three/fiber'
 import Box from '../three/nodes/geometry/Box.tsx'
 import Capsule from '../three/nodes/geometry/Capsule.tsx'
@@ -34,6 +35,9 @@ const resolvePorts = (portType, data) => {
  * we have access to the methods on the instance + it gives us access to do things imperatively here in the reducer
  */
 const resolveNodes = (node, inputValues, nodeType, context) => {
+	console.log(inputValues)
+	const meshBox = useRef(null)
+	console.log('meshBox', meshBox)
 	switch (node.type) {
 		case 'string':
 			return { string: inputValues.string }
@@ -52,7 +56,7 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 				geometry: [
 					{
 						instance: (
-							<Box geometry={{ height: 1, depth: 1, width: 1 }} />
+							<Box ref={meshBox} geometry={{ ...inputValues }} />
 						),
 						...inputValues,
 						type: 'BoxGeometry'
@@ -125,42 +129,34 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 		case 'mirror':
 			console.log('inputvalues', inputValues)
 
-			const { posX, posY, posZ } = inputValues.geometry[0]
+			const {
+				posX,
+				posY,
+				posZ,
+				depth,
+				height,
+				width,
+				rotation,
+				material,
+				type
+			} = inputValues.geometry[0]
 
-			const reflected = [
-				[
-					(1 + (-1 - 1) * posX) ^ 2,
-					(-1 - 1) * posX * posY,
-					(-1 - 1) * posX * posZ
-				],
-				[
-					(-1 - 1) * posX * posY,
-					(1 + (-1 - 1) * posY) ^ 2,
-					(-1 - 1) * posY * posZ
-				],
-				[
-					(-1 - 1) * posX * posZ,
-					(-1 - 1) * posY * posZ,
-					(1 + (-1 - 1) * posZ) ^ 2
-				]
-			]
-
-			console.log('reflected', reflected)
-			const vertices = new Float32Array([
-				(1 + (-1 - 1) * posX) ^ 2,
-				(-1 - 1) * posX * posY,
-				(-1 - 1) * posX * posZ,
-				(-1 - 1) * posX * posY,
-				(1 + (-1 - 1) * posY) ^ 2,
-				(-1 - 1) * posY * posZ,
-				(-1 - 1) * posX * posZ,
-				(-1 - 1) * posY * posZ,
-				(1 + (-1 - 1) * posZ) ^ 2
-			])
+			const planeX = inputValues.plane[0].posX
+			const planeY = inputValues.plane[0].posY
+			const planeZ = inputValues.plane[0].posZ
 			return {
-				geometry: [<bufferGeometry position={[vertices, 4]} />]
+				geometry: [
+					{
+						instance: <Box geometry={{ height, depth, width }} />,
+						posX: planeX + (planeX - posX),
+						posY: planeY + (planeY - posY),
+						posZ: planeZ + posZ,
+						rotation,
+						material,
+						type
+					}
+				]
 			}
-
 		case 'merge':
 			let mergedInputs = []
 			for (let input in inputValues) {
