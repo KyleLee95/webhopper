@@ -1,7 +1,8 @@
 import './App.css'
-import ThreeCanvas from './three/nodes/ThreeCanvas.tsx'
+import { OrbitControls } from '@react-three/drei'
 import React, {
 	useState,
+	useEffect,
 	forwardRef,
 	createRef,
 	useRef,
@@ -18,9 +19,7 @@ import {
 import { engine, config } from './utils/flumeEngine.tsx'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import RenderInWindow from './three/nodes/NewWindowWrapper'
-import GeometryNode from './three/nodes/GeometryNode.tsx'
 import MeshNode from './three/nodes/MeshNode.tsx'
-import MaterialNode from './three/nodes/MaterialNode.tsx'
 //basic string node
 config
 	.addPortType({
@@ -571,18 +570,24 @@ const App = () => {
 		const nodes = nodeEditor.current.getNodes()
 		// Do whatever you want with the nodes
 	}
-	const referenceLength = 10
-	const initialReferences = Array(referenceLength)
-		.fill(0)
-		.map(() => React.createRef())
 
-	const [references, setReferences] = React.useState(initialReferences)
-	//const referenceLength = geometry !== undefined ? geometry.length : 1
-	//
-	const { geometry } = useRootEngine(nodes, engine, {
-		references: references
-	})
-	console.log('references', references)
+	const [refs, setRefs] = useState([])
+	const { geometry } = useRootEngine(nodes, engine, { refs: refs })
+	const geometryLength = geometry?.length
+	useEffect(() => {
+		//need to handle removing the appropriate ref when disconnecting nodes
+		const refArr = Array(geometryLength)
+			.fill(0)
+			.map(i => {
+				if (refs[i]) {
+					return refs[i]
+				} else {
+					return React.createRef()
+				}
+			})
+		setRefs(refArr)
+	}, [geometryLength])
+
 	return (
 		<div className="App">
 			<div style={{ height: '5%' }}>
@@ -594,14 +599,31 @@ const App = () => {
 					nodeTypes={config.nodeTypes}
 					portTypes={config.portTypes}
 					defaultNodes={[
+						{ type: 'BoxGeometry', x: 200, y: -130 },
 						{ type: 'BoxGeometry', x: 190, y: -150 },
-						{ type: 'three-canvas', x: 300, y: 300 }
+						{ type: 'three-canvas', x: 300, y: 300 },
+						{ type: 'merge', x: 200, y: -130 }
 					]}
 					onChange={setNodes}
 				/>
-				<RenderInWindow>
-					<ThreeCanvas references={references} geometry={geometry} />
-				</RenderInWindow>
+				{nodeEditor !== undefined ? (
+					<RenderInWindow>
+						<Canvas camera={{ near: 0.1, far: 1000000 }}>
+							<ambientLight />
+							<pointLight position={[10, 10, 10]} />
+							<axesHelper args={[999999]} />
+							<gridHelper args={[9999, 50]} />
+							{geometry?.map((geom, i) => {
+								return (
+									<MeshNode ref={refs[i]} geometry={geom} />
+								)
+							})}
+							<OrbitControls />
+						</Canvas>
+					</RenderInWindow>
+				) : (
+					<div />
+				)}
 			</div>
 		</div>
 	)
@@ -610,23 +632,6 @@ const App = () => {
 /*
  *
  *
-			<RenderInWindow>
-				<Canvas camera={{ near: 0.1, far: 1000000 }}>
-					<ambientLight />
-					<pointLight position={[10, 10, 10]} />
-					<axesHelper args={[999999]} />
-					<gridHelper args={[9999, 50]} />
-					<Controls />
-					{geometry?.length?.map((geom, i) => {
-						console.log('geom', geom)
-						return (
-							<MeshNode key={i} geometry={geom}>
-								<GeometryNode geometry={geom} />
-								<MaterialNode material={geom.material} />
-							</MeshNode>
-						)
-					})}
-				</Canvas>
-			</RenderInWindow>
- * <ThreeCanvas ref={threeMeshes} geometry={geometry} />*/
+					<ThreeCanvas geometry={geometry} />
+ * */
 export default App

@@ -1,5 +1,5 @@
 import { RootEngine, FlumeConfig } from 'flume'
-import React, { useRef, useState, forwardRef } from 'react'
+import React, { useRef, useState, createRef, forwardRef } from 'react'
 import * as THREE from 'three'
 import Box from '../three/nodes/geometry/Box.tsx'
 import Capsule from '../three/nodes/geometry/Capsule.tsx'
@@ -42,8 +42,7 @@ const resolvePorts = (portType, data) => {
  * The flume engine is the single source of truth.
  */
 const resolveNodes = (node, inputValues, nodeType, context) => {
-	console.log('CONTEXT IN NODE RESOLVER:', context)
-
+	console.log('context', context)
 	switch (node.type) {
 		case 'string':
 			return { string: inputValues.string }
@@ -58,13 +57,12 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 		case 'reverseBoolean':
 			return { boolean: !inputValues.boolean }
 		case 'BoxGeometry':
-			console.log('runs here')
 			return {
 				geometry: [
 					{
 						instance: (
 							<MeshNode
-								ref={context.references[0]} //need to be able to dynamically geterate an id on the fly in order to access the correct reference.
+								ref={context.refs[0]}
 								geometry={{ ...inputValues }}
 							/>
 						),
@@ -109,7 +107,7 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 				geometry: [
 					{
 						...inputValues,
-						instance: <Plane geometry={{ ...inputValues }} />,
+						instance: <MeshNode geometry={{ ...inputValues }} />,
 						type: 'PlaneGeometry'
 					}
 				]
@@ -137,6 +135,7 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 				}
 			}
 		case 'mirror':
+			console.log('inputValues', inputValues)
 			const {
 				posX,
 				posY,
@@ -149,9 +148,6 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 				type
 			} = inputValues.geometry[0]
 
-			//const planeX = inputValues.plane[0].posX
-			//const planeY = inputValues.plane[0].posY
-			//const planeZ = inputValues.plane[0].posZ
 			return {
 				geometry: [
 					{

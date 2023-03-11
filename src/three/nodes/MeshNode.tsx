@@ -16,7 +16,7 @@ import MaterialNode from './MaterialNode.tsx'
  * This component will handle the actual 3D rendering.
  */
 const MeshNode = forwardRef((props, ref) => {
-	console.log('meshnode ref', ref, 'props', props)
+	console.log('props', props)
 	const { geometry } = props
 	const { posX, posY, posZ, rotation } = geometry
 	//because rotation can be an empty object, having || 0 in the rotation props keeps it from breaking.

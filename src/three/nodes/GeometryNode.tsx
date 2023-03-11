@@ -1,4 +1,6 @@
 import React, { useRef, forwardRef } from 'react'
+import Box from './geometry/Box.tsx'
+import * as THREE from 'three'
 /**
  *
  *
@@ -9,7 +11,53 @@ import React, { useRef, forwardRef } from 'react'
  *
  */
 const GeometryNode = props => {
-	return props.geometry.instance
+	const { geometry } = props
+	const { type } = geometry
+
+	switch (type) {
+		case 'BoxGeometry':
+			return <Box geometry={geometry} />
+		case 'CapsuleGeometry':
+			return []
+		case 'CircleGeometry':
+			return []
+		case 'CylinderGeometry':
+			return new THREE.CylinderGeometry()
+		case 'DodecahedronGeometry':
+			return new THREE.DodecahedronGeometry()
+		case 'EdgesGeometry':
+			return new THREE.EdgesGeometry()
+		case 'ExtrudeGeometry':
+			return new THREE.ExtrudeGeometry()
+		case 'IcosahedreonGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'LatheGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'OctahedronGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'PlaneGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'PolyhedronGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'RingGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'ShapeGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'SphereGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'TetrahedronGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'TorusGeometry':
+			return []
+		case 'TorusKnotGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'TubeGeometry':
+			return new THREE.CapsuleGeometry()
+		case 'WireframeGeometry':
+			return new THREE.CapsuleGeometry()
+		default:
+			return <Box geometry={{ height: 1, depth: 1, width: 1 }} />
+	}
 }
 
 export default GeometryNode
