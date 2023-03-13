@@ -11,9 +11,7 @@ import * as THREE from 'three'
  *
  */
 const GeometryNode = props => {
-	const { geometry } = props
-	const { type } = geometry
-
+	const { geometry, type } = props
 	switch (type) {
 		case 'BoxGeometry':
 			return <Box geometry={geometry} />

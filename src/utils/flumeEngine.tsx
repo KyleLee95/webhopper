@@ -57,12 +57,13 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 		case 'reverseBoolean':
 			return { boolean: !inputValues.boolean }
 		case 'BoxGeometry':
+			console.log(context.refs)
 			return {
 				geometry: [
 					{
 						instance: (
 							<MeshNode
-								ref={context.refs[0]}
+								type="BoxGeometry"
 								geometry={{ ...inputValues }}
 							/>
 						),
@@ -148,10 +149,14 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 				type
 			} = inputValues.geometry[0]
 
+			const instance = inputValues.geometry[0].instance
+			instance.visible = !instance.visible
 			return {
 				geometry: [
 					{
-						instance: <Box geometry={{ height, depth, width }} />,
+						instance: (
+							<MeshNode type geometry={{ ...inputValues }} />
+						),
 						...inputValues.geometry[0],
 						rotation,
 						material,
@@ -179,3 +184,4 @@ const resolveNodes = (node, inputValues, nodeType, context) => {
 }
 export const config = flumeConfig
 export const engine = new RootEngine(config, resolvePorts, resolveNodes)
+console.log('engine', engine)

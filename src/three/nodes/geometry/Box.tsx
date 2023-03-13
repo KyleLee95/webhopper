@@ -4,7 +4,7 @@ import MaterialNode from '../MaterialNode.tsx'
 import * as THREE from 'three'
 const Box = props => {
 	const { depth, height, width } = props.geometry
-
+	console.log('props box', props)
 	return <boxGeometry args={[width, height, depth]} />
 }
 

@@ -1,4 +1,4 @@
-import React, { useRef, forwardRef } from 'react'
+import React, { useEffect, useRef, forwardRef } from 'react'
 import { Center } from '@react-three/drei'
 import * as THREE from 'three'
 import GeometryNode from './GeometryNode.tsx'
@@ -17,13 +17,24 @@ import MaterialNode from './MaterialNode.tsx'
  */
 const MeshNode = forwardRef((props, ref) => {
 	console.log('props', props)
-	const { geometry } = props
+	const { geometry, type } = props
 	const { posX, posY, posZ, rotation } = geometry
 	//because rotation can be an empty object, having || 0 in the rotation props keeps it from breaking.
 	const { rotX, rotY, rotZ } = rotation
 	return (
-		<mesh
+		<>
+			<GeometryNode geometry={geometry} type={type} />
+			<MaterialNode material={geometry.material} />
+		</>
+	)
+})
+
+export default MeshNode
+
+/*
+	<mesh
 			ref={ref}
+			userData={{ id: 1 }}
 			onClick={e => console.log('click')}
 			onContextMenu={e => console.log('context menu')}
 			onDoubleClick={e => console.log('double click')}
@@ -40,10 +51,6 @@ const MeshNode = forwardRef((props, ref) => {
 			position={[posX, posZ, posY]}
 			rotation={[rotX || 0, rotZ || 0, rotY || 0]}
 		>
-			<GeometryNode geometry={geometry} />
-			<MaterialNode materia={geometry.material} />
-		</mesh>
-	)
-})
 
-export default MeshNode
+		</mesh>
+		*/

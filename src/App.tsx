@@ -574,16 +574,13 @@ const App = () => {
 	const [refs, setRefs] = useState([])
 	const { geometry } = useRootEngine(nodes, engine, { refs: refs })
 	const geometryLength = geometry?.length
+	console.log('geometry', geometry)
 	useEffect(() => {
 		//need to handle removing the appropriate ref when disconnecting nodes
 		const refArr = Array(geometryLength)
 			.fill(0)
 			.map(i => {
-				if (refs[i]) {
-					return refs[i]
-				} else {
-					return React.createRef()
-				}
+				return React.createRef()
 			})
 		setRefs(refArr)
 	}, [geometryLength])
@@ -606,24 +603,72 @@ const App = () => {
 					]}
 					onChange={setNodes}
 				/>
-				{nodeEditor !== undefined ? (
-					<RenderInWindow>
-						<Canvas camera={{ near: 0.1, far: 1000000 }}>
-							<ambientLight />
-							<pointLight position={[10, 10, 10]} />
-							<axesHelper args={[999999]} />
-							<gridHelper args={[9999, 50]} />
-							{geometry?.map((geom, i) => {
-								return (
-									<MeshNode ref={refs[i]} geometry={geom} />
-								)
-							})}
-							<OrbitControls />
-						</Canvas>
-					</RenderInWindow>
-				) : (
-					<div />
-				)}
+				<RenderInWindow>
+					<Canvas camera={{ near: 0.1, far: 1000000 }}>
+						<ambientLight />
+						<pointLight position={[10, 10, 10]} />
+						<axesHelper args={[999999]} />
+						<gridHelper args={[9999, 50]} />
+						{geometry?.map((geom, i) => {
+							const updated = (
+								<mesh
+									ref={refs[i]}
+									userData={{ id: 1 }}
+									onClick={e => console.log('click')}
+									onContextMenu={e =>
+										console.log('context menu')
+									}
+									onDoubleClick={e =>
+										console.log('double click')
+									}
+									onWheel={e => console.log('wheel spins')}
+									onPointerUp={e => console.log('up')}
+									onPointerDown={e => console.log('down')}
+									onPointerOver={e => console.log('over')}
+									onPointerOut={e => console.log('out')}
+									onPointerEnter={e => console.log('enter')} // see note 1
+									onPointerLeave={e => console.log('leave')} // see note 1
+									onPointerMove={e => console.log('move')}
+									onPointerMissed={() =>
+										console.log('missed')
+									}
+									onUpdate={self => {
+										console.log('props have been updated')
+										if (geometry.length !== refs.length) {
+											console.log(
+												'refs[i] on update',
+												refs[i]
+											)
+											const updatedState = geometry.map(
+												(g, i) => {
+													if (
+														g?.instance?.ref
+															?.current?.uuid ===
+														refs[i].current?.uuid
+													) {
+														return g
+													}
+												}
+											)
+											setRefs(updatedState)
+										}
+									}}
+									position={[geom.posX, geom.posZ, geom.posY]}
+									rotation={[
+										geom.rotation.rotX || 0,
+										geom.rotation.rotZ || 0,
+										geom.rotation.rotY || 0
+									]}
+								>
+									{geom.instance}
+								</mesh>
+							)
+							geom.instance = updated
+							return geom.instance
+						})}
+						<OrbitControls />
+					</Canvas>
+				</RenderInWindow>
 			</div>
 		</div>
 	)
